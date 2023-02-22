@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="/style.css">
+
+<script>
+    ws = new WebSocket("ws://localhost:8002");
+    var connected = false;
+    if(localStorage.getItem("key") == null) {
+        window.location.href = "/login.html";
+    }
+    if(localStorage.getItem("database") == null) {
+        window.location.href = "/login.html";
+    }
+    ws.onopen = function(con) {
+      console.log("Connected to server");
+        connected = true;
+        ws.send(JSON.stringify({"channel": "get", "mode":"all", "key": localStorage.getItem("key"), "database": localStorage.getItem("database")}));
+    }
+    ws.onmessage = function (evt) {
+        var msg = JSON.parse(evt.data);
+        console.log(msg);
+        if (msg.channel == "get") {
+            if (msg.status == "success") {
+                for (var i = 0; i < msg.schema.length; i++) {
+                    var th = document.createElement("th");
+                    th.innerHTML = msg.schema[i];
+                    document.getElementById("data").appendChild(th);
+                }
+                for (var i = 0; i < msg.data.length; i++) {
+                    var tr = document.createElement("tr");
+                    tr.id = "row_" + i;
+                    for (var j = 0; j < msg.schema.length; j++) {
+                        var td = document.createElement("td");
+                        td.innerHTML = msg.data[i][msg.schema[j]];
+                        tr.appendChild(td);
+                    }
+                    document.getElementById("data").appendChild(tr);
+                }
+            } else {
+                window.location.href = "/error.html";
+            }
+        }
+    }
+    ws.onclose = function() {
+      console.log("Disconnected from server");
+      window.location.href = "/error.html";
+    }
+    ws.onerror = function(err) {
+      console.log("Error: " + err);
+      window.location.href = "/error.html";
+    }
+    </script>
+    <title>Dash</title>
+    <h1>DashBoard</h1>
+    <table id="data">
+
+    </table>

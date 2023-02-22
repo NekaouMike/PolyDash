@@ -1,0 +1,62 @@
+<link rel="stylesheet" href="/style.css">
+
+<script>
+ws = new WebSocket("ws://localhost:8002");
+var connected = false;
+
+ws.onopen = function() {
+  console.log("Connected to server");
+    connected = true;
+}
+ws.onmessage = function (evt) {
+    var msg = JSON.parse(evt.data);
+    console.log(msg);
+    if (msg.channel == "login") {
+        if (msg.status == "success") {
+            localStorage.setItem("key", document.getElementById("key").value);
+            localStorage.setItem("database", document.getElementById("database").value);
+            window.location.href = "/dash.html";
+        } else {
+            localStorage.removeItem("key");
+            localStorage.removeItem("database");
+            window.location.href = "/error.html";
+        }
+    }
+}
+ws.onclose = function() {
+  console.log("Disconnected from server");
+  window.location.href = "/error.html";
+}
+ws.onerror = function(err) {
+  console.log("Error: " + err);
+  window.location.href = "/error.html";
+}
+function login(event) {
+    event.preventDefault();
+    if (!connected) {
+        window.location.href = "error.html";
+    }
+  var database = document.getElementById("database").value;
+  var key = document.getElementById("key").value;
+    var data = {
+        "channel": "login",
+        "database": database,
+        "key": key
+    }
+    ws.send(JSON.stringify(data));
+}
+</script>
+<title>Login</title>
+<h1>Login</h1>
+
+<form onsubmit="login(event)" method="post">
+  <div class="form-group">
+    <label for="database">Database</label>
+    <input type="text" class="form-control" id="database" name="database" placeholder="database table">
+  </div>
+  <div class="form-group">
+    <label for="key">Key</label>
+    <input type="password" class="form-control" id="key" name="key" placeholder="DB key">
+  </div>
+  <button type="submit" class="btn btn-primary">Login</button>
+</form>
