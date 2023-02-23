@@ -3,13 +3,90 @@
 <script>
     ws = new WebSocket("ws://localhost:8002");
     var connected = false;
+    var schema = [];
+    var rows = [];
     if(localStorage.getItem("key") == null) {
         window.location.href = "/login.html";
     }
     if(localStorage.getItem("database") == null) {
         window.location.href = "/login.html";
     }
-    ws.onopen = function(con) {
+    function get(row, col){
+        var data = {
+            "channel": "get",
+            "mode": "object",
+            "key": localStorage.getItem("key"),
+            "database": localStorage.getItem("database"),
+            "row": row,
+            "col": col
+        }
+        ws.send(JSON.stringify(data));
+    }
+    function rmrow(row){
+        var data = {
+            "channel": "edit",
+            "mode": "delete",
+            "key": localStorage.getItem("key"),
+            "database": localStorage.getItem("database"),
+            "row": row
+        }
+        ws.send(JSON.stringify(data));
+    }
+    function editschema(){
+        let newschem = prompt("Edit Schema *Seperate each value by a ,", schema.join(","));
+        console.log(newschem);
+        // check if the user clicked ok
+        if (newschem != null) {
+            var data = {
+                "channel": "edit",
+                "mode": "schema",
+                "key": localStorage.getItem("key"),
+                "database": localStorage.getItem("database"),
+                "schema": newschem.split(",")
+            }
+            ws.send(JSON.stringify(data));
+        }
+    }
+        function editrow(row){
+        let newrow = prompt("Edit row enter as JSON", rows[row]);
+        if(JSON.parse(newrow) == null) {
+            alert("Invalid JSON");
+            return;
+        }
+        console.log(newrow);
+        // check if the user clicked ok
+        if (newrow != null) {
+            var data = {
+                "channel": "edit",
+                "mode": "row",
+                "key": localStorage.getItem("key"),
+                "database": localStorage.getItem("database"),
+                "row": row,
+                "data": newrow.split(",")
+            }
+            ws.send(JSON.stringify(data));
+        }
+    }
+    function addrow(){
+        let newrow = prompt("Add row enter as JSON", "");
+        if(JSON.parse(newrow) == null) {
+            alert("Invalid JSON");
+            return;
+        }
+        console.log(newrow);
+        // check if the user clicked ok
+        if (newrow != null) {
+            var data = {
+                "channel": "edit",
+                "mode": "add",
+                "key": localStorage.getItem("key"),
+                "database": localStorage.getItem("database"),
+                "data": newrow.split(",")
+            }
+            ws.send(JSON.stringify(data));
+        }
+    }
+   ws.onopen = function(con) {
       console.log("Connected to server");
         connected = true;
         ws.send(JSON.stringify({"channel": "get", "mode":"all", "key": localStorage.getItem("key"), "database": localStorage.getItem("database")}));
@@ -19,21 +96,52 @@
         console.log(msg);
         if (msg.channel == "get") {
             if (msg.status == "success") {
+            if(msg.mode == "all") {
+                schema = msg.schema;
                 for (var i = 0; i < msg.schema.length; i++) {
                     var th = document.createElement("th");
                     th.innerHTML = msg.schema[i];
                     document.getElementById("data").appendChild(th);
                 }
+                // add a edit button
+                var th = document.createElement("th");
+                th.innerHTML = "<a onclick='editschema()'>Edit</a>";
+                document.getElementById("data").appendChild(th);
                 for (var i = 0; i < msg.data.length; i++) {
+                    rows.push(JSON.stringify(msg.data[i]));
                     var tr = document.createElement("tr");
                     tr.id = "row_" + i;
                     for (var j = 0; j < msg.schema.length; j++) {
                         var td = document.createElement("td");
                         td.innerHTML = msg.data[i][msg.schema[j]];
+                        if(msg.data[i][msg.schema[j]] == true) {
+                            td.style.color = "green";
+                        } else if (msg.data[i][msg.schema[j]] == false) {
+                            td.style.color = "red";
+                        }
+                        if(msg.data[i][msg.schema[j]] == "[object Object]") {
+                            td.innerHTML = "<a onclick='get("+i+","+j+")'>Object</a>";
+                        }
                         tr.appendChild(td);
                     }
+                    var td = document.createElement("td");
+                    td.innerHTML = "<a onclick='editrow("+i+")'>Edit</a>";
+                    tr.appendChild(td);
+                    var td = document.createElement("td");
+                    td.innerHTML = "<a onclick='rmrow("+i+")'>Delete</a>";
+                    tr.appendChild(td);
                     document.getElementById("data").appendChild(tr);
                 }
+            }else if(msg.mode == "object"){
+                alert(JSON.stringify(msg.data));
+            }
+            } else {
+                window.location.href = "/error.html";
+            }
+        }
+        if (msg.channel == "edit") {
+            if (msg.status == "success") {
+                window.location.href = "/dash.html";
             } else {
                 window.location.href = "/error.html";
             }
@@ -53,3 +161,4 @@
     <table id="data">
 
     </table>
+    <button onclick="addrow()">Add Row</button>

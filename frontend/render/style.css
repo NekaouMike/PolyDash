@@ -7,6 +7,7 @@ a{
 }
 a:hover{
     color: #74eabe;
+    cursor: pointer;
 }
 button{
     color: #fff;
@@ -28,4 +29,15 @@ input[type="password"]{
     border: 1px solid rgb(140,65,104);
     border-radius: 3px;
     margin-top: 1rem;
+}
+tr{
+    border: 4px solid rgb(140,65,104);
+    color: #63C9A4;
+    background-color: rgb(111, 53, 83);
+}
+td{
+    border-left: 1px solid rgb(140,65,104);
+    border-right: 1px solid rgb(140,65,104);
+    color: #63C9A4;
+    background-color: rgb(111, 53, 83);
 }
