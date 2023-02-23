@@ -1,0 +1,24 @@
+{
+  "name": "polydash",
+  "version": "0.0.1",
+  "description": "A nodeJS dashboard for PolygonDB",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo do `npm start` to start the server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NekaouMike/PolyDash.git"
+  },
+  "keywords": [
+    "polygondb",
+    "polyconjs"
+  ],
+  "author": "NekaouMike",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NekaouMike/PolyDash/issues"
+  },
+  "homepage": "https://github.com/NekaouMike/PolyDash#readme"
+}

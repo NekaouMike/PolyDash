@@ -5,12 +5,12 @@ const fs = require('fs');
 // declare consts
 const home = "index.html";
 const fileroot = "frontend/render";
-const infoprefix = "{INFO}";
-const reqprefix = "{REQUEST}";
-const errprefix = "{ERROR}";
+const infoprefix = "[INFO]";
+const reqprefix = "[REQUEST]";
+const errprefix = "[ERROR]";
 
 // run server
-exports.default = function (settings) {
+exports.default = function (settings,beport) {
 http.createServer(function (req, res) {
   //router
   var url = req.url.split("?")[0];
@@ -35,6 +35,8 @@ http.createServer(function (req, res) {
   }
   // render file
   fs.readFile(file, function(err, data) {
+    data = data.toString();
+    data = data.replace("{{PORT}}", beport);
 if(file.endsWith(".html")){
   res.writeHead(200, {'Content-Type': 'text/html'});
 }else if(file.endsWith(".css")){
@@ -47,5 +49,5 @@ if(file.endsWith(".html")){
   console.log(reqprefix + url)
 
 }).listen(settings.port);   
-console.log(infoprefix + "Server ready on port:" + settings.port)
+console.log(infoprefix + "Web Dash ready on port:" + settings.port)
 }
