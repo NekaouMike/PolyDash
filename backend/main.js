@@ -87,7 +87,7 @@ wss.on('connection', async function connection(ws) {
             let e = JSON.parse(msg.data)
             for (const [key, value] of Object.entries(e)) {
                 console.log(key, value);
-            let data = await db.record(msg.database,msg.row,key,JSON.stringify(value)).catch(function(err){
+            let data = await db.record(msg.database,msg.row,key,value).catch(function(err){
                 console.log(errprefix+err)
                 ws.send(JSON.stringify({channel:"edit",status:"error",error:err}))
             })
