@@ -96,7 +96,7 @@
         if (msg.channel == "get") {
             if (msg.status == "success") {
             if(msg.mode == "all") {
-                schema = msg.schema;
+                msg.schema = JSON.parse(msg.schema);
                 for (var i = 0; i < msg.schema.length; i++) {
                     var th = document.createElement("th");
                     th.innerHTML = msg.schema[i];
