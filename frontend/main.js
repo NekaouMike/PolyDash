@@ -37,7 +37,7 @@ http.createServer(function (req, res) {
   fs.readFile(file, function(err, data) {
     data = data.toString();
     data = data.replace("{{PORT}}", beport);
-    data = data.replace("{{WSADRR}}", settings.backend.adrr);
+    data = data.replace("{{WSADRR}}", settings.backend.addr);
     if(settings.backend.secure == true){
       data = data.replace("{{WS_SEC}}", "wss://");
     }else{
