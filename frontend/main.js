@@ -54,6 +54,6 @@ if(file.endsWith(".html")){
   });
   console.log(reqprefix + url)
 
-}).listen(settings.port);   
-console.log(infoprefix + "Web Dash ready on port:" + settings.port)
+}).listen(settings.web.port);   
+console.log(infoprefix + "Web Dash ready on port:" + settings.web.port)
 }
