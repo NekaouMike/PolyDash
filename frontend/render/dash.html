@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/style.css">
 <script>
-    ws = new WebSocket("ws://localhost:{{PORT}}");
+    ws = new WebSocket("{{WS_SEC}}{{WSADRR}}:{{PORT}}");
     var connected = false;
     var schema = [];
     var rows = [];
